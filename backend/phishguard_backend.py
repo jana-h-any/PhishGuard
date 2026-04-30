@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
+import uvicorn
 
 # Load ML Model
 
@@ -165,12 +166,3 @@ async def analyze_email(request: AnalyzeRequest):
         model_used=model_used,
     )
 
-if __name__ == "__main__":
-    import uvicorn
-    print("\n🛡️ PhishGuard Backend API")
-    print("=" * 40)
-    print(f"Model: {'ML (' + type(model).__name__ + ')' if model_loaded else'Not Loaded'}")
-    print(f"Server: http://0.0.0.0:8000")
-    print(f"Docs:   http://localhost:8000/docs")
-    print("=" * 40)
-    uvicorn.run(app, host="0.0.0.0", port=8000)

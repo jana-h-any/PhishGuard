@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/scan_result_model.dart';
 
 class ApiService {
-  // Replace 192.168.1.5 with YOUR actual IP from ipconfig
-  static const String _baseUrl = 'http://10.130.35.70:8000/';
+  static const String _baseUrl =
+      'https://phishguard-api-88793191194.europe-west1.run.app/';
 
   Future<ScanResultModel> analyzeEmail({
     required String sender,
