@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/scan_result_model.dart';
 import '../models/email_model.dart';
 import '../utils/constants.dart';
+import 'package:provider/provider.dart';
+import '../services/gmail_service.dart';
+import 'tips.dart';
 
 class ScanResultView extends StatelessWidget {
+  
   final ScanResultModel result;
   final EmailModel email;
   const ScanResultView({super.key, required this.result, required this.email});
@@ -88,34 +92,97 @@ class ScanResultView extends StatelessWidget {
                         Icons.check, 'Avoid sharing sensitive info', false),
                   ],
                 ]))),
-        Container(
+         Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppConstants.borderColor))),
-          child: Row(children: [
-            Expanded(
+            border: Border(top: BorderSide(color: AppConstants.borderColor)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
                 child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.description_outlined, size: 18),
-                    label: const Text('View Email Headers'),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: AppConstants.textSecondary,
-                        side: const BorderSide(color: AppConstants.borderColor),
-                        padding: const EdgeInsets.symmetric(vertical: 12)))),
-            const SizedBox(width: 12),
-            Expanded(
+                  onPressed: () {
+                    if (isPhishing) {
+                      // Navigate to tips screen
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => const TipsView(),
+                      ));
+                    }
+                  },
+                  icon: Icon(
+                    isPhishing ? Icons.touch_app : Icons.description_outlined,
+                    size: 16,
+                  ),
+                  label: Text(
+                    isPhishing ? 'Already Clicked?' : 'View Email Headers',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isPhishing
+                        ? AppConstants.mediumOrange
+                        : AppConstants.textSecondary,
+                    side: BorderSide(
+                      color: isPhishing
+                          ? AppConstants.mediumOrange.withOpacity(0.5)
+                          : AppConstants.borderColor,
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
                 child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                        isPhishing ? Icons.flag_outlined : Icons.star_outline,
-                        size: 18),
-                    label:
-                        Text(isPhishing ? 'Report Email' : 'Mark as Important'),
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: AppConstants.textSecondary,
-                        side: const BorderSide(color: AppConstants.borderColor),
-                        padding: const EdgeInsets.symmetric(vertical: 12)))),
-          ]),
+                 onPressed: () async {
+  if (isPhishing) {
+    try {
+      // Get GmailService from providers
+      final gmailService = Provider.of<GmailService>(context, listen: false);
+
+      await gmailService.markAsPhishing(email.id);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email labeled as Phishing and removed from Inbox'),
+            backgroundColor: AppConstants.phishingRed,
+          ),
+        );
+Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')),
+        );
+      }
+    }
+  }
+}, icon: Icon(
+                    isPhishing ? Icons.flag : Icons.star_outline,
+                    size: 16,
+                  ),
+                  label: Text(
+                    isPhishing ? 'Mark as Phishing' : 'Mark as Important',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isPhishing
+                        ? AppConstants.phishingRed
+                        : AppConstants.textSecondary,
+                    side: BorderSide(
+                      color: isPhishing
+                          ? AppConstants.phishingRed.withOpacity(0.5)
+                          : AppConstants.borderColor,
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ]),
     );

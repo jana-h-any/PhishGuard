@@ -7,8 +7,7 @@ class AuthController extends ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
-      'https://www.googleapis.com/auth/gmail.readonly',
-    ],
+'https://www.googleapis.com/auth/gmail.modify'    ],
     serverClientId: '88793191194-2i9hsd0754047jd395shp0qklsfqpn5b.apps.googleusercontent.com',
   );
 

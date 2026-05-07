@@ -146,4 +146,53 @@ class GmailService {
           DateTime.fromMillisecondsSinceEpoch(int.parse(m.internalDate ?? '0')),
     );
   }
+
+   String? _phishingLabelId;
+
+  /// Create "Phishing" label if it doesn't exist, return label ID
+  Future<String> getOrCreatePhishingLabel() async {
+    if (_gmailApi == null) throw Exception('Gmail API not initialized');
+
+    // Return cached label ID
+    if (_phishingLabelId != null) return _phishingLabelId!;
+
+    // Check if label already exists
+    final labels = await _gmailApi!.users.labels.list('me');
+    for (final label in labels.labels ?? []) {
+      if (label.name == 'Phishing') {
+        _phishingLabelId = label.id;
+        return _phishingLabelId!;
+      }
+    }
+
+    // Create new label
+    final newLabel = await _gmailApi!.users.labels.create(
+      gmail.Label(
+        name: 'Phishing',
+        labelListVisibility: 'labelShow',
+        messageListVisibility: 'show',
+      ),
+      'me',
+    );
+    _phishingLabelId = newLabel.id;
+    return _phishingLabelId!;
+  }
+
+  /// Mark email as phishing: add "Phishing" label + remove from INBOX
+  Future<void> markAsPhishing(String emailId) async {
+    if (_gmailApi == null) throw Exception('Gmail API not initialized');
+
+    final labelId = await getOrCreatePhishingLabel();
+
+    await _gmailApi!.users.messages.modify(
+      gmail.ModifyMessageRequest(
+        addLabelIds: [labelId],
+        removeLabelIds: ['INBOX'],
+      ),
+      'me',
+      emailId,
+    );
+  }
+
+
 }

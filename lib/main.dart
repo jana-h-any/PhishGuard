@@ -31,6 +31,8 @@ class PhishGuardApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EmailController(gmailService)),
         ChangeNotifierProvider(create: (_) => ScanController(apiService, databaseService)),
         ChangeNotifierProvider(create: (_) => HistoryController(databaseService)),
+        Provider<GmailService>.value(value: gmailService),
+
       ],
       child: MaterialApp(
         title: 'PhishGuard',
