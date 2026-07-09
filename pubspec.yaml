@@ -1,4 +1,4 @@
-name: phishguard
+name: PhishGuard
 description: AI-Powered Phishing Email Detection App
 publish_to: 'none'
 version: 1.0.0+1
