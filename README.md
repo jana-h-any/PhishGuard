@@ -1,42 +1,17 @@
-﻿# 🛡️ PhishGuard — AI-Powered Phishing Email Detection
+# PhishGuard — AI-Powered Phishing Email Detection
 
-<p align="center">
-  <img src="assets/icon/app_icon.png" width="120" alt="PhishGuard Logo">
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white" alt="Flutter">
-  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikit-learn&logoColor=white" alt="scikit-learn">
-  <img src="https://img.shields.io/badge/Gmail_API-integrated-EA4335?logo=gmail&logoColor=white" alt="Gmail API">
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-blueviolet" alt="Platforms">
-</p>
-
----
 
 ## 📖 Overview
 
-Phishing attacks are among the most prevalent and dangerous forms of cybercrime, accounting for over **36% of all data breaches** worldwide. They exploit human psychology — urgency, fear, and impersonation — to trick users into revealing sensitive information or clicking malicious links, often through seemingly legitimate emails. Despite spam filters and basic rule-based detection, sophisticated phishing emails continue to reach inboxes every day.
+Phishing attacks are one of the leading causes of data breaches, exploiting users through deceptive emails that imitate trusted sources. PhishGuard is a cross-platform mobile app that connects to Gmail and uses a Machine Learning model to detect phishing emails in real time. It analyzes email content and structure, classifies messages as safe or phishing with confidence, risk level, URL detection, and clear reasons.
 
-**PhishGuard** is a cross-platform mobile application designed to close that gap. It connects directly to a user's Gmail inbox and applies a trained **Machine Learning pipeline** to analyse every email in real-time — classifying it as **safe** or **phishing**, explaining *why*, and offering direct actions to neutralise the threat without leaving the app.
+## App Screens
 
-Unlike static blocklists or keyword filters, PhishGuard learns from the linguistic and structural patterns that define phishing attempts: the combination of suspicious sender domains, urgency-driven language, embedded URLs, requests for sensitive information, and formatting anomalies like excessive capitalisation or punctuation. This multi-dimensional approach makes it significantly harder to evade than traditional rule-based systems.
+| Onboarding, Gmail Connect, Inbox | Analysis and Results | Phishing Guidance |
+| --- | --- | --- |
+| ![PhishGuard onboarding, Gmail connect, and inbox screens](screens/1.jpeg) | ![PhishGuard analyzing, safe result, and phishing result screens](screens/2.jpeg) | ![PhishGuard phishing reasons and post-click guidance screens](screens/3.jpeg) |
 
----
-
-## 🎯 Problem Statement
-
-Standard email clients offer limited protection against phishing:
-
-- **Spam filters** are reactive — they rely on known patterns and can be bypassed by novel attacks.
-- **User judgement** is unreliable under pressure — phishing emails are crafted to create urgency and panic.
-- **No explainability** — even when an email is flagged, users rarely understand *why*, making it hard to learn from the experience.
-- **No in-app remediation** — acting on a flagged email (labelling, reporting, removing) requires navigating multiple Gmail menus.
-
-PhishGuard addresses all four gaps in a single, intuitive application.
-
----
 
 ## 🔍 How It Works
 
@@ -89,19 +64,16 @@ Every completed scan is persisted to a local **SQLite database** using `sqflite`
 
 ---
 
-## ✨ Key Features
+## Features
 
-| Feature | Description |
-|---|---|
-| 🔐 **Google OAuth 2.0** | Secure sign-in with minimal permission scope |
-| 📥 **Live Inbox Fetch** | Reads from Inbox, Promotions, and Social in real time |
-| 🤖 **ML Classification** | Naive Bayes + TF-IDF + 9 numerical features |
-| 📊 **Confidence Scoring** | Percentage confidence with Low / Medium / High risk |
-| 🧠 **Explainable AI** | Plain-English reasons for every verdict |
-| 🏷️ **Gmail Labelling** | One-tap "Mark as Phishing" — labels + removes from inbox |
-| 🕒 **Scan History** | Persistent local history via SQLite |
-| 💡 **Recovery Tips** | Step-by-step guidance for post-click victims |
-| 🌙 **Dark UI** | Polished dark theme with Material Design 3 |
+- Google OAuth sign-in and Gmail inbox access.
+- Email scanning through a deployed FastAPI ML endpoint.
+- Scan results with label, confidence, risk level, and reasons.
+- Detection signals such as URLs, suspicious domains, urgent language, sensitive-data requests, and formatting cues.
+- Local SQLite scan history with filtering and weekly statistics.
+- Dark mobile UI with safe/phishing result states.
+- Post-click guidance for users who interacted with a suspicious email.
+
 
 ---
 
@@ -131,87 +103,6 @@ PhishGuard is built on a clean **MVC (Model-View-Controller)** pattern on the Fl
           └─────────────────────────┘
 ```
 
-This separation keeps the Flutter app lightweight and platform-agnostic, while allowing the ML backend to be updated, retrained, or swapped independently.
-
----
-
-## 🛠️ Tech Stack
-
-### Flutter Application
-| Package | Version | Purpose |
-|---|---|---|
-| `google_sign_in` | ^6.2.1 | OAuth 2.0 Google authentication |
-| `googleapis` | ^13.2.0 | Gmail REST API client |
-| `googleapis_auth` | ^1.6.0 | Authenticated HTTP client |
-| `provider` | ^6.1.2 | State management (MVC) |
-| `sqflite` | ^2.3.3 | Local scan history (SQLite) |
-| `fl_chart` | ^0.68.0 | Confidence score visualisation |
-| `lottie` | ^3.1.2 | Animated loading states |
-| `shimmer` | ^3.0.0 | Skeleton loading UI |
-| `url_launcher` | ^6.2.6 | Safe external link handling |
-
-### Python Backend
-| Package | Purpose |
-|---|---|
-| `FastAPI` | HTTP API framework |
-| `uvicorn` | ASGI production server |
-| `scikit-learn` | ML models & TF-IDF vectoriser |
-| `numpy` / `scipy` | Numerical feature matrix & sparse ops |
-| `joblib` | Model serialisation / loading |
-| `pydantic` | Request/response validation |
-
----
-
-## 📁 Project Structure
-
-```
-PhishGuard/
-├── backend/                          # Python inference microservice
-│   ├── phishguard_backend.py         # FastAPI app + full ML pipeline
-│   ├── naive_bayes_model.joblib      # Primary classifier (active)
-│   ├── lr_model.joblib               # Logistic Regression (available)
-│   ├── Random_Forest_model.joblib    # Random Forest (available)
-│   ├── tfidf_vectorizer.joblib       # Fitted TF-IDF vectorizer
-│   └── requirements.txt
-│
-├── lib/                              # Flutter source code
-│   ├── main.dart                     # App entry point & Provider setup
-│   ├── controllers/
-│   │   ├── auth_controller.dart      # Google Sign-In state
-│   │   ├── email_controller.dart     # Inbox fetching state
-│   │   ├── scan_controller.dart      # Scan request & result state
-│   │   └── history_controller.dart   # Scan history state
-│   ├── models/
-│   │   ├── email_model.dart
-│   │   ├── scan_result_model.dart
-│   │   ├── history_model.dart
-│   │   └── user_model.dart
-│   ├── services/
-│   │   ├── gmail_service.dart        # Gmail API: fetch, label, mark
-│   │   ├── api_service.dart          # HTTP client → Python backend
-│   │   └── database_service.dart     # SQLite persistence
-│   ├── views/
-│   │   ├── onboarding_view.dart
-│   │   ├── connect_gmail_view.dart
-│   │   ├── inbox_view.dart
-│   │   ├── email_detail_view.dart
-│   │   ├── analyzing_view.dart
-│   │   ├── scan_result_view.dart
-│   │   ├── history_view.dart
-│   │   ├── profile_view.dart
-│   │   ├── tips.dart
-│   │   └── home_shell.dart
-│   └── utils/
-│       ├── constants.dart
-│       ├── theme.dart
-│       └── routes.dart
-│
-├── assets/icon/app_icon.png
-└── pubspec.yaml
-```
-
----
-
 ## 🤖 ML Models
 
 Three classifiers were trained and shipped with the app. **Naive Bayes** is active by default.
@@ -225,6 +116,19 @@ Three classifiers were trained and shipped with the app. **Naive Bayes** is acti
 All three share the same TF-IDF vectoriser (`tfidf_vectorizer.joblib`) and are drop-in interchangeable via a single config line in the backend.
 
 ---
+
+
+## Tech Stack
+
+| Part | Tools |
+| --- | --- |
+| Mobile | Flutter, Dart, Provider |
+| Gmail integration | Google Sign-In, Gmail API |
+| Local storage | SQLite, `sqflite` |
+| Backend | Python, FastAPI, Uvicorn |
+| ML | scikit-learn, TF-IDF, Naive Bayes, joblib |
+| Deployment | Google Cloud Run |
+
 
 ## 📡 API Reference
 
@@ -270,43 +174,68 @@ Analyse a single email for phishing indicators.
 
 ---
 
-## 📱 Supported Platforms
 
-| Platform | Status |
-|---|---|
-| Android | ✅ |
-| iOS | ✅ |
-| Web | ✅ |
-| macOS | ✅ |
-| Windows | ✅ |
-| Linux | ✅ |
+Risk level logic:
 
----
+| Level | Meaning |
+| --- | --- |
+| `high` | phishing with confidence >= 80% |
+| `medium` | phishing with confidence < 80% |
+| `low` | safe email |
 
-## 📸 Screenshots
+## Project Structure
 
-> *(Add screenshots of Onboarding, Inbox, Scan Result, and History screens here)*
+```text
+phishguard/
+  lib/
+    controllers/      # auth, email, scan, history state
+    models/           # email, scan result, history, user models
+    services/         # Gmail API, backend API, SQLite
+    utils/            # constants, routes, theme
+    views/            # onboarding, inbox, result, history, profile, tips
+    main.dart
+  backend/
+    phishguard_backend.py
+    requirements.txt
+    naive_bayes_model.joblib
+    tfidf_vectorizer.joblib
+    lr_model.joblib
+    Random_Forest_model.joblib
+  notebook/
+    Phishing_email notebook.ipynb
+  screens/
+    1.jpeg
+    2.jpeg
+    3.jpeg
+  assets/
+  pubspec.yaml
+```
 
----
+## Main Dependencies
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome.
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes using [Conventional Commits](https://www.conventionalcommits.org/)
-4. Push and open a Pull Request
-
----
+```yaml
+provider: ^6.1.2
+google_sign_in: ^6.2.1
+googleapis: ^13.2.0
+googleapis_auth: ^1.6.0
+extension_google_sign_in_as_googleapis_auth: ^2.0.12
+http: ^1.2.1
+sqflite: ^2.3.3
+fl_chart: ^0.68.0
+lottie: ^3.1.2
+shimmer: ^3.0.0
+shared_preferences: ^2.2.3
+```
 
 ## 👩‍💻 Author
 
 **Jana Hany**  
-[GitHub](https://github.com/jana-h-any)
 
----
 
-## 📄 License
+## 📬 Contact
 
-This project is for educational purposes. All rights reserved © 2025 Jana Hany.
+[GitHub](https://github.com/jana-h-any): @jana-h-any
+
+[LinkedIn](www.linkedin.com/in/jana-hany) : [jana-hany]
+
+[Email](janahanymostafa.h@gmail.com): [janahanymostafa.h@gmail.com]
